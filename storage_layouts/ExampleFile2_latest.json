@@ -1,0 +1,12 @@
+{
+  "_storage": [
+    {
+      "astId": 25542,
+      "label": "slot1",
+      "offset": 0,
+      "slot": "0",
+      "_contract": "src/ExampleFile2.sol:ExampleFile2",
+      "_type": "t_uint256"
+    }
+  ]
+}

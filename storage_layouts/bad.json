@@ -1,0 +1,20 @@
+{
+  "_storage": [
+    {
+      "astId": 25535,
+      "label": "slot1",
+      "offset": 0,
+      "slot": "0",
+      "_contract": "src/ExampleFile.sol:ExampleFile",
+      "_type": "t_address"
+    },
+    {
+      "astId": 25537,
+      "label": "slot2",
+      "offset": 0,
+      "slot": "1",
+      "_contract": "src/ExampleFile.sol:ExampleFile",
+      "_type": "t_address"
+    }
+  ]
+}
