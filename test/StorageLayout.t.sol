@@ -7,7 +7,7 @@ contract StorageLayoutTest is Test {
     string[] watchedContracts;
     string constant LATEST = "latest";
     string constant EXISTING = "existing";
-    mapping(string => mapping(string => uint256)) nameCounts;
+    mapping(bool => mapping(string => mapping(string => uint256))) contractNameCounts;
     mapping(string => mapping(string => StorageLayout)) contractLatestLayoutLabelToStruct;
 
     struct StorageLayout {
@@ -77,14 +77,15 @@ contract StorageLayoutTest is Test {
         StorageLayout[] memory storageLayouts = layout._storage;
         for (uint256 i = 0; i < storageLayouts.length; i++) {
             StorageLayout memory storageLayout = storageLayouts[i];
-            string memory storageKey = getStorageKey(storageLayout);
+            string memory storageKey = getStorageKey(storageLayout, true);
             contractLatestLayoutLabelToStruct[storageLayout._contract][storageKey] = storageLayout;
         }
     }
 
-    function getStorageKey(StorageLayout memory layout) internal view returns (string memory) {
-        // nameCounts[layout._]
-        return string.concat(layout._type, layout._contract, layout.label);
+    function getStorageKey(StorageLayout memory layout, bool latest) internal returns (string memory) {
+        // get current counter value and store incremented value
+        uint256 counter = contractNameCounts[latest][layout._contract][layout.label]++;
+        return string.concat(layout._type, layout._contract, layout.label, vm.toString(counter));
     }
 
     /**
@@ -95,7 +96,7 @@ contract StorageLayoutTest is Test {
         StorageLayout[] memory existingLayouts = existing._storage;
         for (uint256 i = 0; i < existingLayouts.length; i++) {
             StorageLayout memory existingLayout = existingLayouts[i];
-            string memory storageKey = getStorageKey(existingLayout); //._contract, existingLayout.label);
+            string memory storageKey = getStorageKey(existingLayout, false); //._contract, existingLayout.label);
             StorageLayout memory latestLayout = contractLatestLayoutLabelToStruct[existingLayout._contract][storageKey];
 
             assertEq(
