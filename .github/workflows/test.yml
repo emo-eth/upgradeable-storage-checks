@@ -1,9 +1,14 @@
 name: test
 
-on: workflow_dispatch
-
+on:
+  push:
+    branches: [main]
+    tags: ["*"]
+  pull_request:
+    types: [opened, reopened, synchronize]
 env:
   FOUNDRY_PROFILE: ci
+
 
 jobs:
   check:
@@ -15,20 +20,34 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
+          ref: ${{ github.head_ref }}
           submodules: recursive
+      - run: |
+          echo "Current branch: ${GITHUB_HEAD_REF}"
+
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
           version: nightly
-
-      - name: Run Forge build
+      
+      - name: Copy latest layouts for testing
         run: |
-          forge --version
-          forge build --sizes
-        id: build
+          bash generate_latest_layouts.sh
 
       - name: Run Forge tests
         run: |
           forge test -vvv
         id: test
+      
+      - name: Update layouts
+        run: |
+          if [[ `git diff --exit-code` ]]; then
+            bash copy_latest_layouts.sh        
+            git config --local user.name 'GitHub Actions Bot'
+            git config --local user.email '<>'
+            git add .
+            git commit -m "Automatically updated storage_layouts"
+            git push
+          fi
+        id: update
